@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>注册</title>
+    <link href="/css/demo.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<div id="header">
+    <img src="/images/meizu.png"/>
+</div>
+<div id="content">
+    <img src="/images/beijing.png" style="width: 100%;"/>
+    <form class="mainform" action="add" method="post">
+        <div class="zhuce"><a href="#">注册</a></div>
+        <div class="xinxi">
+            <input name="name" class="phone" id="phone" style="font-size: 14px;" maxlength="11" placeholder="&nbsp;&nbsp;用户名"
+                   autocomplete="off"/>
+        </div>
+
+        <!--验证码框-->
+        <div class="yanzhengma" style="display: block">
+            <input name="code" type="text" id="yanzhengma" style="width: 100px;height: 50px;font-size: 14px;display: inline-block"
+                   class="huoqu"
+                   maxlength="6" autocomplete="off" placeholder="&nbsp;&nbsp;验证码"/>
+            <img src="{:captcha_src()}" alt="captcha" onclick="this.src=this.src+'?'"
+                 style="cursor: pointer;width: 160px;display: inline;float: right;position: relative;"/>
+        </div>
+
+        <!--密码框-->
+        <div class="mima">
+            <!--密码显示时-->
+            <div id="shouView">
+                <input name="password" type="text" id="mimashow" style="width: 274px;height: 50px;font-size: 14px;" class="password"
+                       autocomplete="off" placeholder="&nbsp;&nbsp;密码"/>
+                <a href="#"><img id="show" src="/images/yanjing.png" onclick="hidePicture()"/></a>
+            </div>
+        </div>
+
+        <!--密码框-->
+        <div class="haha">
+            <!--密码显示时-->
+            <div id="id">
+                <input name="repassword" type="text" id="haha" style="width: 274px;height: 50px;font-size: 14px;" class="password"
+                       autocomplete="off" placeholder="&nbsp;&nbsp;确认密码"/>
+                <a href="#"><img id="la" src="/images/yanjing.png" onclick="hidePicture()"/></a>
+            </div>
+        </div>
+
+
+        <div class="tiaoli">
+            <font>点击注册，即表示您同意并愿意遵守</font>
+            <a href="https://i.flyme.cn/serviceAgreement"> Flyme服务协议 </a>
+            <font>和</font>
+            <a href="http://www.meizu.com/legal.html">法律声明</a>
+        </div>
+        <!--注册按钮-->
+        <div class="btn">
+            <button type="submit" class="f-btn" style="cursor: pointer">注册</button>
+        </div>
+        <div class="last"><a href="login.html">登录</a></div>
+    </form>
+
+
+    <!--手机号码提示框-->
+    <div class="send">
+        <font>输入手机号码，可用于登录和找回密码</font>
+        <div class="arrow"></div>
+    </div>
+    <!--验证码提示框-->
+    <div class="send1">
+        <font>请输入手机收到的验证码</font>
+
+    </div>
+    <!--密码提示框-->
+    <div class="send2">
+        <font>长度为8-16个字符，区分大小写，至少包含两种类型</font>
+        <div class="arrow"></div>
+    </div>
+
+</div>
+<div class="footer">
+    <div class="footer1">
+        <div class="footer11"><a href="http://www.meizu.com/about.html">关于魅族</a></div>
+        <div class="footer11"><a href="http://hr.meizu.com/">工作机会</a></div>
+        <div class="footer11"><a href="http://www.meizu.com/contact.html">联系我们</a></div>
+        <div class="footer11"><a href="http://www.meizu.com/legal.html">法律声明</a></div>
+        <div class="footer11"><a href="https://uc-res.mzres.com/resources/uc/wlogin/faq/html/index.html">常见问题</a></div>
+        <div class="footer11"><a href="#">简体中文</a></div>
+    </div>
+
+    <div class="footer2">
+        <font size="2px;" color="black">客服热线 400-788-3333</font>
+        <span>
+            <a href="http://live-i.meizu.com/live800/chatClient/chatbox.jsp?companyID=8957&configID=4&enterurl=&pagereferrer=&info=&k=1">
+            <img id="img" src="/images/kefu.png"/></a></span>
+    </div>
+
+    <div class="footer3">©2016 Meizu Telecom Equipment Co., Ltd. All rights reserved.&nbsp;<font>备案号: 粤ICP备13003602号-4&nbsp;经营许可证编号:
+        粤B2-20130198营业执照</font></div>
+</div>
+
+</body>
+<script src="/js/jquery-1.10.2.min.js"></script>
+<script src="/js/demo.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+</html>
+
