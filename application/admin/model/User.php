@@ -19,7 +19,7 @@ class User extends Model{
 
 }
 
-
+    
 
 
 

@@ -3,6 +3,7 @@ namespace app\admin\controller;
 use \app\admin\controller\Base as BaseController;
 use app\admin\model\User as UserModel;
 use app\admin\validate\User as UserValidate;
+use think\Db;
 
 
 class User extends  BaseController{
@@ -29,7 +30,6 @@ class User extends  BaseController{
         }
         $user=new UserModel($data);
         $ret=$user->allowField(true)->save();
-
 
         if($ret){
             $this->success('新增管理员成功','User/userlist');
@@ -102,4 +102,5 @@ class User extends  BaseController{
             $this->error('请传入文件');
         }
     }
+
 }
