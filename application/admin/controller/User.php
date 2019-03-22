@@ -79,8 +79,6 @@ class User extends  BaseController{
     }
     public function toUpload(){
         $file = request()->file('image');
-//        $id=input('post.id');
-//        $user=new UserModel();
 
         if($file){
             $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
