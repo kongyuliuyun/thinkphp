@@ -12,39 +12,7 @@ use PHPExcel;
 
 class Upload extends Controller{
 
-//        public function upload(){
-//            vendor("PHPExcel.PHPExcel"); //方法一
-//            $objPHPExcel = new \PHPExcel();
-////获取表单上传文件
-//            $file = request()->file('excel');
-//            $info = $file->validate(['size'=>156780,'ext'=>'xlsx,xls,csv'])->move(ROOT_PATH . 'public' . DS . 'excel');
-//            if($info){
-////获取文件名
-//                $exclePath = $info->getSaveName();
-////上传文件的地址
-//                $file_name = ROOT_PATH . 'public' . DS . 'excel' . DS . $exclePath;
-//                $objReader = \PHPExcel_IOFactory::createReader('Excel5');
-////加载文件内容,编码utf-8
-//                $obj_PHPExcel = $objReader->load($file_name, $encode = 'utf-8');
-//
-//                echo "<pre>";
-//                $excel_array = $obj_PHPExcel->getsheet(0)->toArray(); //转换为数组格式
-//                array_shift($excel_array); //删除第一个数组(标题);
-//                $data = [];
-//                foreach ($excel_array as $k => $v) {
-//                    $data[$k]['name'] = $v['0'];
-//                    $data[$k]['gender'] = $v['1'];
-//                    $data[$k]['address'] = $v['2'];
-//                }
-////批量插入数据
-//                $success = Db::name('info')->insertAll($data);
-//                echo '数据添加成功';
-//            }else{
-//// 上传失败获取错误信息
-//                echo $file->getError();
-//            }
-//
-//        }
+
         public function download(){
             $time=input('post.time');
 
@@ -113,11 +81,6 @@ class Upload extends Controller{
             $objPHPExcel->getActiveSheet()->getStyle( $colorzb)->getFill()->getStartColor()->setARGB('FFFFFF00');
 
 
-
-
-
-
-
             $objPHPExcel->getActiveSheet()->setTitle('info');      //设置sheet的名称
             $objPHPExcel->setActiveSheetIndex(0);                   //设置sheet的起始位置
 
@@ -127,7 +90,6 @@ class Upload extends Controller{
             $objPHPExcel->setActiveSheetIndex(1);
             $num = 1;
             $this->makeData($objPHPExcel,$num);
-//            $this->createSheets($objPHPExcel);
 
 
             $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');   //通过PHPExcel_IOFactory的写函数将上面数据写出来
@@ -140,12 +102,13 @@ class Upload extends Controller{
             $excel=$PHPWriter->save("php://output"); //表示在$path路径下面生成demo.xlsx文件
 
         }
-
+        //添加新的sheet
         protected function makeData($objPHPExcel,$num)
         {
             $objPHPExcel->createSheet();
             $objPHPExcel->setActiveSheetIndex($num);
             //$objPHPExcel->getActiveSheet()->setCellValue('A1', '第二个表');//在这个sheet表格之前的头部标题
+//            $objPHPExcel->getActiveSheet()->mergeCells( 'A1:D1');//合并
 
             //设置居中
             $objPHPExcel->getActiveSheet()->getStyle('A1:D1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -197,6 +160,69 @@ class Upload extends Controller{
 
 
         }
+
+        public function Index(){
+            $filename=request()->file('file');
+            $this->readyExcel();
+        }
+
+       //在已有文件的表格之后追加数据
+    public function readyExcel(){
+        vendor("PHPExcel.PHPExcel");
+        //输入需要插入文件的地址
+        $filename='C:\Users\skyuniverse\Downloads\数据库文件.xlsx';
+        $inputFileName = $filename;//excel文件路径
+        date_default_timezone_set('PRC');
+        // 读取excel文件
+        try {
+            $inputFileType = \PHPExcel_IOFactory::identify($inputFileName);
+            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load($inputFileName);
+        } catch(\Exception $e) {
+            die('加载文件发生错误："'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
+        }
+        $array =Db::table('think_user')->select();
+
+        //获取数据的行数，在插入数据时可以直接使用，不用手动赋值
+        $row=$objPHPExcel->getSheet(0)->getHighestRow();
+
+        $count=count($array);
+        $baseRow=9;      //指定插入到第17行后
+        for ($i = 2; $i <= $count+1; $i++) {
+            $row=$baseRow+$i-2;
+            //在getsheet中传入参数可以选择传入的sheet，如果是getActiveSheet传入参数无效，
+            //就默认为1（这是我自己的情况，默认为person，下面设置全线框同理）
+            $objPHPExcel->getSheet(0)->setCellValue('A' . $row, $array[$i-2]['id']);
+            $objPHPExcel->getSheet(0)->setCellValue('B' . $row, $array[$i-2]['name']);
+            $objPHPExcel->getSheet(0)->setCellValue('C' . $row, $array[$i-2]['create_time']);
+            $objPHPExcel->getSheet(0)->setCellValue('D' . $row, $array[$i-2]['update_time']);
+            $objPHPExcel->getSheet(0)->setCellValue('E' . $row, $array[$i-2]['ip']);
+            $objPHPExcel->getSheet(0)->setCellValue('F' . $row, $array[$i-2]['email']);
+
+
+        }
+
+        $styleThinBlackBorderOutline = array(
+            'borders' => array(
+                'allborders' => array( //设置全部边框
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN //粗的是thick
+                ),
+
+            ),
+        );
+        $j=$baseRow+$count-1;
+        $zb = 'A9:' . 'F' . $j;//设置边框的单元格坐标，从A1开始到F$j
+        $objPHPExcel->getSheet(0)->getStyle($zb)->applyFromArray($styleThinBlackBorderOutline);
+
+
+        ob_end_clean();//清除缓存区，解决乱码问题
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="数据库文件.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+        exit;
+    }
 
 
 }

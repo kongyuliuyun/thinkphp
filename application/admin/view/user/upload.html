@@ -5,6 +5,12 @@
 
 </form>
 <hr>
+<form action="{:url('admin/Upload/Index')}" enctype="multipart/form-data" method="post">
+    <input type="file" name="file" class="btn btn-success navbar-btn"/> <br>
+    <input type="submit" value="上传"  class="btn btn-primary"/>
+
+</form>
+<hr>
 <form action="{:url('admin/Upload/download')}" method="post">
    <label>TABLE</label>
     <hr>
