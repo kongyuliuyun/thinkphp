@@ -50,7 +50,6 @@ class Upload extends Controller{
                 $objPHPExcel->getActiveSheet()->setCellValue('E' . $i, $sql[$i-2]['ip']);
                 $objPHPExcel->getActiveSheet()->setCellValue('F' . $i, $sql[$i-2]['email']);
 
-
                 //设置需要添加颜色的坐标,样式限定添加在这个时间之后
                 if($sql[$i-2]['create_time']>$time)
                 {
@@ -133,6 +132,7 @@ class Upload extends Controller{
             $count = count($sql);  //计算有多少条数据
             //数据库中需要导出的项
             for ($i = 2; $i <= $count + 1; $i++) {
+                //大写字母表示各列，$i表示插入的行数
                 $objPHPExcel->getActiveSheet()->setCellValue('A' . $i, $sql[$i - 2]['id']);
                 $objPHPExcel->getActiveSheet()->setCellValue('B' . $i, $sql[$i - 2]['name']);
                 $objPHPExcel->getActiveSheet()->setCellValue('C' . $i, $sql[$i - 2]['create_time']);
@@ -152,25 +152,23 @@ class Upload extends Controller{
                 $zb = 'A1:' . 'D' . $j;//设置边框的单元格坐标，从A1开始到F$j
                 $objPHPExcel->getActiveSheet()->getStyle($zb)->applyFromArray($styleThinBlackBorderOutline);
 
-
                 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, "Excel2007");
                 /*保存到本地*/
                 $objPHPExcel->getActiveSheet()->setTitle('person');//sheet名称
                 return true;
-
-
         }
 
         public function Index(){
             $filename=request()->file('file');
-            $this->readyExcel();
+            $file=$_FILES['file']["tmp_name"];//获取上传文件的路径，将其传入到追加表格文件函数中
+            $this->readyExcel($file);
         }
 
-       //在已有文件的表格之后追加数据
-    public function readyExcel(){
+
+    public function readyExcel($file){   //在已有文件的表格之后追加数据
         vendor("PHPExcel.PHPExcel");
         //输入需要插入文件的地址
-        $filename='C:\Users\skyuniverse\Downloads\数据库文件.xlsx';
+        $filename=$file;
         $inputFileName = $filename;//excel文件路径
         date_default_timezone_set('PRC');
         // 读取excel文件
@@ -181,26 +179,28 @@ class Upload extends Controller{
         } catch(\Exception $e) {
             die('加载文件发生错误："'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
         }
+
         $array =Db::table('think_user')->select();
 
         //获取数据的行数，在插入数据时可以直接使用，不用手动赋值
         $row=$objPHPExcel->getSheet(0)->getHighestRow();
 
-        $count=count($array);
-        $baseRow=9;      //指定插入到第17行后
+        $count=count($array);  //插入的数据的长度
+        $baseRow=$row+3;      //指定插入到第?行，插入到所有数据的3行之后
         for ($i = 2; $i <= $count+1; $i++) {
             $row=$baseRow+$i-2;
-            //在getsheet中传入参数可以选择传入的sheet，如果是getActiveSheet传入参数无效，
-            //就默认为1（这是我自己的情况，默认为person，下面设置全线框同理）
+            //在getSheet()中传入参数可以选择传入的sheet，如果是getActiveSheet()传入参数无效，
+            //就默认为1（这是我自己的情况，默认的sheet为person[可能后生成的sheet默认为ActiveSheet]，下面设置全线框同理）
             $objPHPExcel->getSheet(0)->setCellValue('A' . $row, $array[$i-2]['id']);
             $objPHPExcel->getSheet(0)->setCellValue('B' . $row, $array[$i-2]['name']);
             $objPHPExcel->getSheet(0)->setCellValue('C' . $row, $array[$i-2]['create_time']);
             $objPHPExcel->getSheet(0)->setCellValue('D' . $row, $array[$i-2]['update_time']);
             $objPHPExcel->getSheet(0)->setCellValue('E' . $row, $array[$i-2]['ip']);
             $objPHPExcel->getSheet(0)->setCellValue('F' . $row, $array[$i-2]['email']);
-
-
         }
+
+        $objPHPExcel->getSheet(0)->mergeCells( 'A8:B9');//合并单元格（合并A8,A9,B8,B9四个单元格）
+
 
         $styleThinBlackBorderOutline = array(
             'borders' => array(
@@ -211,7 +211,7 @@ class Upload extends Controller{
             ),
         );
         $j=$baseRow+$count-1;
-        $zb = 'A9:' . 'F' . $j;//设置边框的单元格坐标，从A1开始到F$j
+        $zb = 'A'.$baseRow.':' . 'F' . $j;//设置边框的单元格坐标，从A？开始到F$j(从规定插入的行数开始）
         $objPHPExcel->getSheet(0)->getStyle($zb)->applyFromArray($styleThinBlackBorderOutline);
 
 
@@ -223,6 +223,4 @@ class Upload extends Controller{
         $objWriter->save('php://output');
         exit;
     }
-
-
 }

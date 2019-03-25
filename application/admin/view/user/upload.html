@@ -1,22 +1,30 @@
 {layout name="layout" /}
+<br>
+<div id="upload">
 <form action="toUpload" enctype="multipart/form-data" method="post">
+    <label>上传文件</label>
     <input type="file" name="image" class="btn btn-success navbar-btn"/> <br>
     <input type="submit" value="上传"  class="btn btn-primary"/>
 
 </form>
+</div>
 <hr>
 <form action="{:url('admin/Upload/Index')}" enctype="multipart/form-data" method="post">
+    <h4>将数据追加到这个表格中</h4>
     <input type="file" name="file" class="btn btn-success navbar-btn"/> <br>
-    <input type="submit" value="上传"  class="btn btn-primary"/>
+    <input type="submit" value="添加"  class="btn btn-primary"/>
 
 </form>
 <hr>
+<hr>
 <form action="{:url('admin/Upload/download')}" method="post">
-   <label>TABLE</label>
+   <label>将数据导出为表格</label>
     <hr>
-    <label>根据时间筛选出在此之后的数据</label>
+    <label>根据时间筛选出数据</label>
     <br>
     <input type="text" value="" name="time">
     <hr>
-    <button type="submit" value="导出">导出</button>
+    <button type="submit" value="导出" class="btn btn-primary">导出</button>
+
 </form>
+<br>
